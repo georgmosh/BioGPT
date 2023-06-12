@@ -30,35 +30,35 @@ def load_state_dict(model, pubmed_biogpt_ckp):
     model.load_state_dict(state_dict_v2)
 
 
-def run():
+if __name__ == "__main__":
     set_seeds(0)
-    m = TransformerLanguageModel.from_pretrained(
-        "/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioGPT/data/BioGPT-Large",
-        "/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioGPT/checkpoints/Pre-trained-BioGPT-Large/checkpoint.pt",
-        data="/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioGPT/data/BioGPT-Large",
-        tokenizer='moses',
-        bpe='fastbpe',
-        bpe_codes="data/biogpt_large_bpecodes",
-        min_len=100,
-        max_len_b=1024)
-    m.cuda()
-    src_tokens = m.encode("COVID-19 is")
-    generate = m.generate([src_tokens], beam=5)[0]
-    output = m.decode(generate[0]["tokens"])
-    print(output)
-
-    src_tokens = m.encode("The Effect of chloroquine on cultured fibroblasts is")
-    generate = m.generate([src_tokens], beam=5)[0]
-    output = m.decode(generate[0]["tokens"])
-    print(output)
-
-    load_state_dict(m, "/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioGPT/checkpoints/QA-PubMedQA-BioGPT-Large/checkpoint_avg.pt")
-
-    m.cuda()
-    src_tokens = m.encode("The Effect of chloroquine on cultured fibroblasts is")
-    generate = m.generate([src_tokens], beam=5)[0]
-    output = m.decode(generate[0]["tokens"])
-    print(output)
+    # m = TransformerLanguageModel.from_pretrained(
+    #     "/media/geomos/AUEB BIOMEDICAL DATA/BioGPT/data/BioGPT-Large",
+    #     "/media/geomos/AUEB BIOMEDICAL DATA/BioGPT/checkpoints/Pre-trained-BioGPT-Large/checkpoint.pt",
+    #     data="/media/geomos/AUEB BIOMEDICAL DATA/BioGPT/data/BioGPT-Large",
+    #     tokenizer='moses',
+    #     bpe='fastbpe',
+    #     bpe_codes="data/biogpt_large_bpecodes",
+    #     min_len=100,
+    #     max_len_b=1024)
+    # m.cuda()
+    # src_tokens = m.encode("COVID-19 is")
+    # generate = m.generate([src_tokens], beam=5)[0]
+    # output = m.decode(generate[0]["tokens"])
+    # print(output)
+    #
+    # src_tokens = m.encode("The Effect of chloroquine on cultured fibroblasts is")
+    # generate = m.generate([src_tokens], beam=5)[0]
+    # output = m.decode(generate[0]["tokens"])
+    # print(output)
+    #
+    # load_state_dict(m, "/media/geomos/AUEB BIOMEDICAL DATA/BioGPT/checkpoints/QA-PubMed-BioGPT-Large/checkpoint_avg.pt")
+    #
+    # m.cuda()
+    # src_tokens = m.encode("The Effect of chloroquine on cultured fibroblasts is")
+    # generate = m.generate([src_tokens], beam=5)[0]
+    # output = m.decode(generate[0]["tokens"])
+    # print(output)
 
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     model = BioGptForCausalLM.from_pretrained("microsoft/BioGPT-Large")
@@ -66,12 +66,12 @@ def run():
     model = model.to(device)
 
     inputs = tokenizer.encode('COVID-19 is', return_tensors="pt").to(device)
-    model_generation = model.generate(inputs, max_length=1024)
+    model_generation = model.generate(inputs, max_length=100)
     output = tokenizer.decode(model_generation[0], skip_special_tokens=True)
     print(output)
 
     inputs = tokenizer.encode('The Effect of chloroquine on cultured fibroblasts is', return_tensors="pt").to(device)
-    model_generation = model.generate(inputs, max_length=1024)
+    model_generation = model.generate(inputs, max_length=100)
     output = tokenizer.decode(model_generation[0], skip_special_tokens=True)
     print(output)
 
@@ -80,11 +80,11 @@ def run():
     model = model.to(device)
 
     inputs = tokenizer.encode('COVID-19 is', return_tensors="pt").to(device)
-    model_generation = model.generate(inputs, max_length=1024)
+    model_generation = model.generate(inputs, max_length=100)
     output = tokenizer.decode(model_generation[0])
     print(output)
 
     inputs = tokenizer.encode('The Effect of chloroquine on cultured fibroblasts is', return_tensors="pt").to(device)
-    model_generation = model.generate(inputs, max_length=1024)
+    model_generation = model.generate(inputs, max_length=100)
     output = tokenizer.decode(model_generation[0])
     print(output)
