@@ -1,37 +1,22 @@
 import os
 import json
 import subprocess
-import numpy as np
-import torch
-import sys
+
 
 from tqdm import tqdm
-from fairseq.models.transformer_lm import TransformerLanguageModel
-from transformers import pipeline, set_seed, BioGptTokenizer, BioGptForCausalLM
-
-
-def set_seeds(seed):
-    set_seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    np.random.seed(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    return
-
 
 class DataLoader:
-    def __init__(self, mode="Load"):
+    def __init__(self, mode="Load", split="training11b.json"):
         # Set the appropriate paths and load the data .json files
         # TODO: Try running crawler.sh through Terminal before the first time executing this script (changing paths).
         # TODO: If that fails set the paths corresponding to your PC and local_dump="Download" and run one time.
         # TODO: If the download process completes partially set local_dump="Partial Download" and run again.
         # TODO: (Disclaimer) This process will take one day to complete thus avoid is possible.
-        self.BioASQ_DIR = r"/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/"
-        self.PubMed_DIR = r"/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/PubMed"
-        self.FAISS_DIR = r"/media/georg_mosh/Data SSD/BIOMEDICAL/checkpoints/PubMed_index_16_8_100_10_10-4"
-        self.DPR_DIR = r"/media/georg_mosh/Data SSD/BIOMEDICAL/checkpoints/PubMed_DPR_16_8_100_10_10-4"
-        self.data = self.load_json()
+        self.BioASQ_DIR = r"/media/geomos/AUEB BIOMEDICAL SYSTEMS/BioASQ11_data"
+        self.PubMed_DIR = r"/media/geomos/AUEB BIOMEDICAL SYSTEMS/PubMed"
+        self.FAISS_DIR = r"/media/geomos/BIOMEDICAL/checkpoints/PubMed_index_16_8_100_10_10-4"
+        self.DPR_DIR = r"/media/geomos/BIOMEDICAL/checkpoints/PubMed_DPR_16_8_100_10_10-4"
+        self.data = self.load_json(split)
 
         # Get a local copy of the corresponding publications in the right format
         self.websites, self.missing_websites = self.collect_data(mode)
@@ -49,8 +34,8 @@ class DataLoader:
 
         return collected, missing
 
-    def load_json(self):
-        file = open(os.path.join(self.BioASQ_DIR, "training11b.json"))
+    def load_json(self, filename):
+        file = open(os.path.join(self.BioASQ_DIR, filename))
         data = json.load(file)
         file.close()
 
@@ -115,74 +100,3 @@ class DataLoader:
         # Subprocess call only tested in Ubuntu 20.04 - should work in all Linux versions.
         # This should also work on Mac-OS (as is or with minor changes).
         subprocess.call("../crawler.sh")
-
-
-"""
-Write a given list.
-"""
-def write_list(list, directory, filename, save=True):
-    if save:
-        with open(os.path.join(directory, filename), 'w') as handle:
-            json.dump(list, handle)
-
-def model1():
-    data = DataLoader()
-    model = TransformerLanguageModel.from_pretrained(
-        "/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioGPT/data/BioGPT-Large",
-        "/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioGPT/checkpoints/Pre-trained-BioGPT-Large/checkpoint.pt",
-        data="/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioGPT/data/BioGPT-Large",
-        tokenizer='moses',
-        bpe='fastbpe',
-        bpe_codes="data/biogpt_large_bpecodes",
-        min_len=100,
-        max_len_b=1024)
-    model.cuda()
-
-    for question in data.data['questions']:
-        src_tokens = model.encode(question['body'])
-        generate = model.generate([src_tokens], beam=5)[0]
-        output = model.decode(generate[0]["tokens"])
-        question['BioGPT_answer'] = output
-
-    write_list(data.data['questions'], "/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioASQ11/LargeLanguageModels", "BioGPT_Large_checkpoint.txt")
-    completed = True
-
-
-def model2():
-    set_seeds(0)
-    data = DataLoader()
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    model = BioGptForCausalLM.from_pretrained("microsoft/BioGPT-Large")
-    tokenizer = BioGptTokenizer.from_pretrained("microsoft/BioGPT-Large")
-    model = model.to(device)
-
-    for question in data.data['questions']:
-        inputs = tokenizer.encode(question['body'], return_tensors="pt").to(device)
-        model_generation = model.generate(inputs, max_length=1024)
-        output = tokenizer.decode(model_generation[0])
-        question['BioGPT_HF_answer'] = output
-
-    write_list(data.data['questions'], "/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioASQ11/LargeLanguageModels", "BioGPT_Large_HF_checkpoint.txt")
-    completed = True
-
-
-def model3():
-    set_seeds(0)
-    data = DataLoader()
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
-    model = BioGptForCausalLM.from_pretrained("microsoft/BioGPT-Large-PubMedQA")
-    tokenizer = BioGptTokenizer.from_pretrained("microsoft/BioGPT-Large-PubMedQA")
-    model = model.to(device)
-
-    for question in data.data['questions']:
-        inputs = tokenizer.encode(question['body'], return_tensors="pt").to(device)
-        model_generation = model.generate(inputs, max_length=1024)
-        output = tokenizer.decode(model_generation[0])
-        question['BioGPT_HF_QA_answer'] = output
-
-    write_list(data.data['questions'], "/media/georg_mosh/Data SSD/AUEB BIOMEDICAL DATA/BioASQ11/LargeLanguageModels", "BioGPT_Large_HF_PubMed_checkpoint.txt")
-    completed = True
-
-
-model3()
-x=2
