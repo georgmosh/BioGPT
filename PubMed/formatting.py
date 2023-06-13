@@ -8,8 +8,8 @@ data = [DataLoader(split="BioASQ-task11bPhaseB-testset1.json"),
         DataLoader(split="BioASQ-task11bPhaseB-testset3.json"),
         DataLoader(split="BioASQ-task11bPhaseB-testset4.json")]
 
-zsl_dir = "/home/geomos/Documents/BIOASQ 11b/BioASQ11_results/zero_shot_prompting"
-zsl_dst_dir = "/home/geomos/Documents/BIOASQ 11b/BioASQ11_results/Reporting/zero_shot_prompting"
+zsl_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_prompting"
+zsl_dst_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_prompting"
 
 for results_file in os.listdir(zsl_dir):
     results = {'questions': []}
@@ -20,8 +20,8 @@ for results_file in os.listdir(zsl_dir):
                                      'id': question['id']})
     write_dict(results, zsl_dst_dir, "baseline_" + results_file)
 
-icl_dir = "/home/geomos/Documents/BIOASQ 11b/BioASQ11_results/few_shot_prompting"
-icl_dst_dir = "/home/geomos/Documents/BIOASQ 11b/BioASQ11_results/Reporting/few_shot_prompting"
+icl_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_prompting"
+icl_dst_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_prompting"
 
 for results_file in os.listdir(icl_dir):
     results = {'questions': []}
