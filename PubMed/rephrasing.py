@@ -37,8 +37,9 @@ for results_file in os.listdir(icl_dir):
     gold_relevant_snippets = extract_snippets(bioasq_data.data['questions'])
     for question in bioasq_data.data['questions']:
         try:
-            processed = re.sub(re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '', question['body'].lower()), '',
-                               re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '', generations[question['id']].lower()))
+            processed = re.sub('here is some useful additional information', '',
+                               re.sub(re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '', question['body'].lower()), '',
+                               re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '', generations[question['id']].lower())))
             processed = re.sub(re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '',
                                       gold_relevant_snippets[question['id']].lower()), '',
                                re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '', processed))
