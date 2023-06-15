@@ -38,7 +38,8 @@ for idx in range(len(data)):
             processed = re.sub(re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '',
                                       gold_relevant_snippets[question['id']].lower()), '',
                                re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '', processed))
-        answer = generations[question['id']] if len(processed) > 10 else None
+        answer = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']]) \
+            if len(processed) > 10 else None
         answer_metadata = {'type': question['type'], 'ideal_answer': answer, 'id': question['id']}
         if question['type'] == 'yesno':
             answer_metadata['exact_answer'] = "yes"
@@ -52,7 +53,7 @@ for idx in range(len(data)):
     generations = read_dict(zsl_dir, results_file)
     for question in results[-1]['questions']:
         if question['ideal_answer'] is None:
-            question['ideal_answer'] = generations[question['id']]
+            question['ideal_answer'] = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']])
 
     write_dict(results, zsl_dst_dir, "baseline_" + results_file)
 
@@ -88,7 +89,8 @@ for idx in range(len(data)):
             processed = re.sub(re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '',
                                       gold_relevant_snippets[question['id']].lower()), '',
                                re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '', processed))
-        answer = generations[question['id']] if len(processed) > 10 else None
+        answer = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']])\
+            if len(processed) > 10 else None
         answer_metadata = {'type': question['type'], 'ideal_answer': answer, 'id': question['id']}
         if question['type'] == 'yesno':
             answer_metadata['exact_answer'] = "yes"
@@ -102,6 +104,7 @@ for idx in range(len(data)):
     generations = read_dict(icl_dir, results_file)
     for question in results[-1]['questions']:
         if question['ideal_answer'] is None:
-            question['ideal_answer'] = generations[question['id']]
+            question['ideal_answer'] = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']])
 
-    write_dict(results, icl_dst_dir, "baseline_" + results_file)
+for i in range(len(results)):
+    write_dict(results[i], icl_dst_dir, "baseline_" + initial_models[i])
