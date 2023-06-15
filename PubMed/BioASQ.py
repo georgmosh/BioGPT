@@ -12,8 +12,8 @@ class DataLoader:
         # TODO: If that fails set the paths corresponding to your PC and local_dump="Download" and run one time.
         # TODO: If the download process completes partially set local_dump="Partial Download" and run again.
         # TODO: (Disclaimer) This process will take one day to complete thus avoid is possible.
-        self.BioASQ_DIR = r"D:\AUEB Material\Datasets\BioASQ"
-        self.PubMed_DIR = r"D:\AUEB Material\Datasets\PubMed"
+        self.BioASQ_DIR = r"F:\AUEB Material\Datasets\BioASQ"
+        self.PubMed_DIR = r"F:\AUEB Material\Datasets\PubMed"
         self.FAISS_DIR = r"/media/geomos/BIOMEDICAL/checkpoints/PubMed_index_16_8_100_10_10-4"
         self.DPR_DIR = r"/media/geomos/BIOMEDICAL/checkpoints/PubMed_DPR_16_8_100_10_10-4"
         self.data = self.load_json(split)

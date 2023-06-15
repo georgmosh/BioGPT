@@ -15,8 +15,8 @@ supplementary_models = ["PubMedGPT_test1_bs5.txt", "PubMedGPT_test2_bs5.txt", "P
 assert len(data) == len(initial_models)
 assert len(data) == len(supplementary_models)
 
-zsl_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_prompting"
-zsl_dst_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_ensembling"
+zsl_dir = r"F:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_prompting"
+zsl_dst_dir = r"F:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_ensembling"
 
 results = []
 for idx in range(len(data)):
@@ -55,7 +55,8 @@ for idx in range(len(data)):
         if question['ideal_answer'] is None:
             question['ideal_answer'] = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']])
 
-    write_dict(results, zsl_dst_dir, "baseline_" + results_file)
+for i in range(len(results)):
+    write_dict(results[i], zsl_dst_dir, "baseline_" + initial_models[i])
 
 
 initial_models = ["PubMedGPT_test1_bs5.txt", "PubMedGPT_test2_bs5.txt", "PubMedGPT_test3_bs5.txt",
@@ -66,8 +67,8 @@ supplementary_models = ["PubMedGPT_test1_bs3.txt", "PubMedGPT_test2_bs3.txt", "P
 assert len(data) == len(initial_models)
 assert len(data) == len(supplementary_models)
 
-icl_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_prompting"
-icl_dst_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_ensembling"
+icl_dir = r"F:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_prompting"
+icl_dst_dir = r"F:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_ensembling"
 
 results = []
 for idx in range(len(data)):
