@@ -15,8 +15,8 @@ supplementary_models = ["PubMedGPT_test1_bs5.txt", "PubMedGPT_test2_bs5.txt", "P
 assert len(data) == len(initial_models)
 assert len(data) == len(supplementary_models)
 
-zsl_dir = r"F:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_prompting"
-zsl_dst_dir = r"F:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_ensembling"
+zsl_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_prompting"
+zsl_dst_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\zero_shot_ensembling"
 
 results = []
 for idx in range(len(data)):
@@ -38,8 +38,7 @@ for idx in range(len(data)):
             processed = re.sub(re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '',
                                       gold_relevant_snippets[question['id']].lower()), '',
                                re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '', processed))
-        answer = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']]) \
-            if len(processed) > 10 else None
+        answer = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']]).replace(question['body'], '')[:200] if len(processed) > 10 else None
         answer_metadata = {'type': question['type'], 'ideal_answer': answer, 'id': question['id']}
         if question['type'] == 'yesno':
             answer_metadata['exact_answer'] = "yes"
@@ -53,7 +52,12 @@ for idx in range(len(data)):
     generations = read_dict(zsl_dir, results_file)
     for question in results[-1]['questions']:
         if question['ideal_answer'] is None:
-            question['ideal_answer'] = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']])
+            q_x = None
+            for q_x_l in data[idx].data['questions']:
+                if q_x_l['id'] == question['id']:
+                    q_x = q_x_l
+            question['ideal_answer'] = re.sub(q_x['body'], '', re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;()? ]+',
+                                              '', generations[question['id']]))[:200]
 
 for i in range(len(results)):
     write_dict(results[i], zsl_dst_dir, "baseline_" + initial_models[i])
@@ -67,8 +71,8 @@ supplementary_models = ["PubMedGPT_test1_bs3.txt", "PubMedGPT_test2_bs3.txt", "P
 assert len(data) == len(initial_models)
 assert len(data) == len(supplementary_models)
 
-icl_dir = r"F:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_prompting"
-icl_dst_dir = r"F:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_ensembling"
+icl_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_prompting"
+icl_dst_dir = r"D:\AUEB Material\NSRC Demokritos - BioASQ\BioASQ11_results\few_shot_ensembling"
 
 results = []
 for idx in range(len(data)):
@@ -90,7 +94,11 @@ for idx in range(len(data)):
             processed = re.sub(re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '',
                                       gold_relevant_snippets[question['id']].lower()), '',
                                re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ ]+', '', processed))
-        answer = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']])\
+        try:
+            generated = generations[question['id']].split("Here is some useful additional information")[1][:200]
+        except:
+            generated = generations[question['id']]
+        answer = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generated)\
             if len(processed) > 10 else None
         answer_metadata = {'type': question['type'], 'ideal_answer': answer, 'id': question['id']}
         if question['type'] == 'yesno':
@@ -105,7 +113,11 @@ for idx in range(len(data)):
     generations = read_dict(icl_dir, results_file)
     for question in results[-1]['questions']:
         if question['ideal_answer'] is None:
-            question['ideal_answer'] = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;() ]+', '', generations[question['id']])
+            try:
+                generated = generations[question['id']].split("Here is some useful additional information")[1][:200]
+            except:
+                generated = generations[question['id']]
+            question['ideal_answer'] = re.sub(r'[^A-Za-zΑ-Ω0-9α-ωά-ώάέήίόύώϊΐϋΰ.;()? ]+', '', generated)
 
 for i in range(len(results)):
     write_dict(results[i], icl_dst_dir, "baseline_" + initial_models[i])
