@@ -6,7 +6,7 @@ import sys
 
 from PubMed.BioASQ import *
 from fairseq.models.transformer_lm import TransformerLanguageModel
-from transformers import pipeline, set_seed, BioGptTokenizer, BioGptForCausalLM, GPT2LMHeadModel, GPT2Tokenizer
+from transformers import pipeline, set_seed, GPT2LMHeadModel, GPT2Tokenizer, BioGptTokenizer, BioGptForCausalLM
 
 def set_seeds(seed):
     set_seed(seed)
@@ -33,6 +33,11 @@ Write a given dictionary.
 def write_dict(dict, directory, filename):
     with open(os.path.join(directory, filename), 'w') as convert_file:
         convert_file.write(json.dumps(dict))
+
+def model():
+    set_seeds(0)
+    data = DataLoader()
+    stop = True
 
 def model2():
     set_seeds(0)
@@ -163,4 +168,4 @@ def model4():
                "PubMedGPT_test4_bs1.txt")
     completed = True
 
-model2()
+model()

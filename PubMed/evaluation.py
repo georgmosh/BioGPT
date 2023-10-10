@@ -106,5 +106,6 @@ def coco_eval_selective_testset(method="few_shot_prompting", split="BioASQ-task1
     coco_eval.compute_scores(ground_truth, exp_results)
 
 if __name__ == "__main__":
+    coco_eval_trainset()
     # coco_eval_testset()
-    coco_eval_selective_testset()
+    # coco_eval_selective_testset()
